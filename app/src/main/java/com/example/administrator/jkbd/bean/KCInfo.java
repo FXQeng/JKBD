@@ -1,10 +1,12 @@
 package com.example.administrator.jkbd.bean;
 
+import android.support.v7.app.AppCompatActivity;
+
 /**
  * Created by Who on 2017/6/28.
  */
 
-public class KCInfo {
+public class KCInfo extends AppCompatActivity {
 
     /**
      * subjectTitle : c1
