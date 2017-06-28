@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
  * Created by Who on 2017/6/28.
  */
 
-public class KCInfo extends AppCompatActivity {
+public class KCInFormation extends AppCompatActivity {
 
     /**
      * subjectTitle : c1
