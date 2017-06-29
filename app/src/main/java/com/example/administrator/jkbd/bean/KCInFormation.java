@@ -51,4 +51,11 @@ public class KCInFormation extends AppCompatActivity {
     public void setQuestionCount(int questionCount) {
         this.questionCount = questionCount;
     }
+
+    @Override
+    public String toString() {
+        return "考试科目:" + subjectTitle + '\n' +
+                "考题数量:" + questionCount +'\n' +
+                "考试时间:" +limitTime  +"分钟";
+    }
 }
