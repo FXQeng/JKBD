@@ -12,6 +12,7 @@ import com.example.administrator.jkbd.R;
 import com.example.administrator.jkbd.bean.ExamInfo;
 import com.example.administrator.jkbd.bean.Question;
 import com.example.administrator.jkbd.biz.IExamBiz;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -54,6 +55,9 @@ public class ExamActivity extends AppCompatActivity {
                         tvOp2.setText(exam.getItem2());
                         tvOp3.setText(exam.getItem3());
                         tvOp4.setText(exam.getItem4());
+                        Picasso.with(ExamActivity.this)
+                                               .load(exam.getUrl())
+                                               .into(mImageView);
                     }
     }
 
