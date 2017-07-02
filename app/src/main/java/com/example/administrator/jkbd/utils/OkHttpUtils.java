@@ -241,10 +241,10 @@ public class OkHttpUtils<T> {
 
     /**
      * 设置json解析的目标类对象
-     * @param clazz :解析的类对象
+     * @param clazz:解析的类对象
      * @return
      */
-    public OkHttpUtils<T> targetClass(Class<String> clazz) {
+    public OkHttpUtils<T> targetClass(Class<T> clazz) {
         mClazz = clazz;
         return this;
     }
