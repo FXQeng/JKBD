@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
  * Created by Who on 2017/6/28.
  */
 
-public class ExamInfo extends AppCompatActivity {
+public class ExamInfo{
 
     /**
      * subjectTitle : c1
