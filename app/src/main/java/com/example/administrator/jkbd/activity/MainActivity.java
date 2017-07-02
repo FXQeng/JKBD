@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.administrator.jkbd.R;
-import com.example.administrator.jkbd.bean.KCInFormation;
+import com.example.administrator.jkbd.bean.ExamInfo;
 import com.example.administrator.jkbd.utils.OkHttpUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,20 +19,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test(View view) {
-        OkHttpUtils<KCInFormation> utils =new OkHttpUtils<>(getApplicationContext()) ;
-        String uri ="http://101.251.196.90:8080/JztkServer/examInfo";
-        utils.url(uri).targetClass(KCInFormation.class)
-                .execute(new OkHttpUtils.OnCompleteListener<KCInFormation>() {
-                    @Override
-                    public void onSuccess(KCInFormation result) {
-                        Log.e("main","result="+result);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e("main","error="+error);
-                    }
-                });
         startActivity(new Intent(MainActivity.this,ExamActivity.class));
     }
 
