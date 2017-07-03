@@ -16,6 +16,7 @@ import com.example.administrator.jkbd.ExamApplication;
 import com.example.administrator.jkbd.R;
 import com.example.administrator.jkbd.bean.ExamInfo;
 import com.example.administrator.jkbd.bean.Question;
+import com.example.administrator.jkbd.biz.ExamBiz;
 import com.example.administrator.jkbd.biz.IExamBiz;
 import com.squareup.picasso.Picasso;
 
@@ -51,6 +52,7 @@ public class ExamActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        biz = new ExamBiz();
         new Thread(new Runnable() {
             @Override
             public void run() {
