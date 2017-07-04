@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,6 +26,7 @@ import com.example.administrator.jkbd.bean.ExamInfo;
 import com.example.administrator.jkbd.bean.Question;
 import com.example.administrator.jkbd.biz.ExamBiz;
 import com.example.administrator.jkbd.biz.IExamBiz;
+import com.example.administrator.jkbd.view.QuestionAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.sql.Time;
@@ -43,7 +45,9 @@ public class ExamActivity extends AppCompatActivity {
     CheckBox[] cbs = new CheckBox[4];
     ProgressBar dialog;
     ImageView mImageView;
+    Gallery mgallery;
     IExamBiz biz;
+    QuestionAdapter mAdapter;
 
     boolean isLoadExamInfo=false;
     boolean isLoadQuestions=false;
@@ -95,7 +99,6 @@ public class ExamActivity extends AppCompatActivity {
         tvOp4 = (TextView) findViewById(R.id.tv_op4);
         tvload=(TextView) findViewById(R.id.tv_load);
         tvNo=(TextView) findViewById(R.id.tv_exam_no);
-        tvTime=(TextView)findViewById(R.id.tv_timer);
         cb01 = (CheckBox) findViewById(R.id.cb_01);
         cb02 = (CheckBox) findViewById(R.id.cb_02);
         cb03 = (CheckBox) findViewById(R.id.cb_03);
@@ -105,6 +108,7 @@ public class ExamActivity extends AppCompatActivity {
         cbs[2] = cb03;
         cbs[3] = cb04;
         mImageView = (ImageView) findViewById(R.id.im_exam_image);
+        mgallery=(Gallery)findViewById(R.id.gallery) ;
         layoutLoading.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,9 +157,10 @@ public class ExamActivity extends AppCompatActivity {
                 ExamInfo examInfo = ExamApplication.getInstance().getExamInfo();
                 if (examInfo != null) {
                     showData(examInfo);
-                }
-                    showExam(biz.getExam());
                     initTimer(examInfo);
+                }
+                initGallery();
+                showExam(biz.getExam());
                 }
             }else{
                 layoutLoading.setEnabled(true);
@@ -163,6 +168,11 @@ public class ExamActivity extends AppCompatActivity {
                 tvload.setText("下载失败，点击重新下载");
             }
         }
+
+    private void initGallery() {
+        mAdapter=new QuestionAdapter(this);
+        mgallery.setAdapter(mAdapter);
+    }
 
     private void initTimer(ExamInfo examInfo) {
         int sumTime=examInfo.getLimitTime()*60*1000;
@@ -207,6 +217,7 @@ public class ExamActivity extends AppCompatActivity {
             tvOp2.setText(exam.getItem2());
             tvOp3.setText(exam.getItem3());
             tvOp4.setText(exam.getItem4());
+            tvTime=(TextView)findViewById(R.id.tv_timer);
             layout03.setVisibility(exam.getItem3().equals("") ? View.GONE : View.VISIBLE);
             cb03.setVisibility(exam.getItem3().equals("") ? View.GONE : View.VISIBLE);
             layout04.setVisibility(exam.getItem4().equals("") ? View.GONE : View.VISIBLE);
@@ -269,22 +280,22 @@ public class ExamActivity extends AppCompatActivity {
     }
 
     public void commit(View view) {
-        saveUserAnswer();
-        int s=biz.commitExam();
-        View.inflate(this, R.layout.layout_result,null);
-        TextView tvResult=(TextView)findViewById(R.id.tv_result);
-        tvResult.setText("你的分数为\n"+s+"分!");
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setIcon(R.mipmap.exam_commit32x32)
-                .setTitle("交卷")
-                //.setMessage("你的分数为\n"+s+"分!")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
-        builder.create().show();
+            saveUserAnswer();
+            int s = biz.commitExam();
+            View inflate = View.inflate(this, R.layout.layout_result, null);
+            TextView tvResult = (TextView) inflate.findViewById(R.id.tv_result);
+            tvResult.setText("你的分数为\n"+s+"分！");
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setIcon(R.mipmap.exam_commit32x32)
+                    .setTitle("交卷")
+                    .setView(inflate)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+            builder.create().show();
     }
 
     class LoadExamBroadcast extends BroadcastReceiver{
