@@ -2,11 +2,13 @@ package com.example.administrator.jkbd.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -227,6 +229,25 @@ public class ExamActivity extends AppCompatActivity {
     public void nextExam(View view) {
         saveUserAnswer();
         showExam(biz.nextQuestion());
+    }
+
+    public void commit(View view) {
+        saveUserAnswer();
+        int s=biz.commitExam();
+        View.inflate(this, R.layout.layout_result,null);
+        TextView tvResult=(TextView)findViewById(R.id.tv_result);
+        tvResult.setText("你的分数为\n"+s+"分!");
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.exam_commit32x32)
+                .setTitle("交卷")
+                //.setMessage("你的分数为\n"+s+"分!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+        builder.create().show();
     }
 
     class LoadExamBroadcast extends BroadcastReceiver{
