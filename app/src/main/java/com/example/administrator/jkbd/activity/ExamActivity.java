@@ -160,7 +160,7 @@ public class ExamActivity extends AppCompatActivity {
 
 
     private void showExam(Question exam) {
-        Log.e("showExam", "showExam,exam=" + exam);
+        Log.e("showExam","showExam,exam="+exam);
         if (exam != null) {
             tvNo.setText(biz.getExamIndex());
             tvExamTitle.setText(exam.getQuestion());
@@ -181,6 +181,11 @@ public class ExamActivity extends AppCompatActivity {
                 mImageView.setVisibility(View.GONE);
             }
             resetOptions();
+            String userAnswer =exam.getUserAnswer();
+            if(userAnswer!=null&&!userAnswer.equals("")) {
+                int userCB = Integer.parseInt(userAnswer) - 1;
+                cbs[userCB].setChecked(true);
+            }
         }
     }
 
@@ -190,6 +195,14 @@ public class ExamActivity extends AppCompatActivity {
         }
     }
 
+    private void saveUserAnswer(){
+        for(int i=0;i<cbs.length;i++){
+            if(cbs[i].isChecked()) {
+                biz.getExam().setUserAnswer(String.valueOf(i+1));
+                return;
+            }
+        }
+    }
 
     private void showData(ExamInfo examInfo) {
         tvExamInfo.setText(examInfo.toString());
@@ -207,10 +220,12 @@ public class ExamActivity extends AppCompatActivity {
     }
 
     public void preExam(View view) {
+        saveUserAnswer();
         showExam(biz.preQuestion());
     }
 
     public void nextExam(View view) {
+        saveUserAnswer();
         showExam(biz.nextQuestion());
     }
 
