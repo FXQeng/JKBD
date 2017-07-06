@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    //点击随机测试进入考试界面
     public void test(View view) {
         startActivity(new Intent(MainActivity.this,ExamActivity.class));
     }

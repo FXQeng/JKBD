@@ -40,7 +40,8 @@ import java.util.TimerTask;
  */
 
 public class ExamActivity extends AppCompatActivity {
-    TextView tvExamInfo,tvExamTitle,tvOp1,tvOp2,tvOp3,tvOp4,tvload,tvNo,tvTime;
+    char[] optoin=new char[4];
+    TextView tvExamInfo,tvExamTitle,tvOp1,tvOp2,tvOp3,tvOp4,tvload,tvNo,tvTime,tvAnswer;
     LinearLayout layoutLoading,layout03,layout04;
     CheckBox cb01,cb02,cb03,cb04;
     CheckBox[] cbs = new CheckBox[4];
@@ -67,7 +68,7 @@ public class ExamActivity extends AppCompatActivity {
         mLoadExamBroadcast = new LoadExamBroadcast();
         mLoadQuestionBroadcast = new LoadQuestionBroadcast();
         setListener();
-        initView();
+        initView();    //初始化控件
         biz = new ExamBiz();
         loadData();
     }
@@ -90,6 +91,10 @@ public class ExamActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        optoin[0]='A';
+        optoin[1]='B';
+        optoin[2]='C';
+        optoin[3]='D';
         layoutLoading=(LinearLayout)findViewById(R.id.layout_loading);
         layout03 = (LinearLayout) findViewById(R.id.layout_03);
         layout04 = (LinearLayout) findViewById(R.id.layout_04);
@@ -102,6 +107,7 @@ public class ExamActivity extends AppCompatActivity {
         tvOp4 = (TextView) findViewById(R.id.tv_op4);
         tvload=(TextView) findViewById(R.id.tv_load);
         tvNo=(TextView) findViewById(R.id.tv_exam_no);
+        tvAnswer=(TextView)findViewById(R.id.tv_answer) ;
         cb01 = (CheckBox) findViewById(R.id.cb_01);
         cb02 = (CheckBox) findViewById(R.id.cb_02);
         cb03 = (CheckBox) findViewById(R.id.cb_03);
@@ -128,6 +134,7 @@ public class ExamActivity extends AppCompatActivity {
         cb04.setOnCheckedChangeListener(listener);
     }
 
+    //答案选项互斥
     CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -157,6 +164,8 @@ public class ExamActivity extends AppCompatActivity {
             }
         }
     };
+
+    //初始化数据
     private void initData() {
         if(isLoadExamInfoReceiver&&isLoadQuestionsReceiver){
             if (isLoadExamInfo && isLoadQuestions) {
@@ -164,7 +173,7 @@ public class ExamActivity extends AppCompatActivity {
                 ExamInfo examInfo = ExamApplication.getInstance().getExamInfo();
                 if (examInfo != null) {
                     showData(examInfo);
-                    initTimer(examInfo);
+                    initTimer(examInfo);  //调用倒计时方法
                 }
                 initGallery();
                 showExam(biz.getExam());
@@ -177,9 +186,9 @@ public class ExamActivity extends AppCompatActivity {
         }
 
     private void initGallery() {
-        mAdapter=new QuestionAdapter(this);
+        mAdapter=new QuestionAdapter(this);   //实例化适配器对象
         mgallery.setAdapter(mAdapter);
-        mgallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mgallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {   //Gallery点击事件
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 saveUserAnswer();
@@ -188,6 +197,7 @@ public class ExamActivity extends AppCompatActivity {
         });
     }
 
+    //进入考试界面开始倒计时
     private void initTimer(ExamInfo examInfo) {
         int sumTime=examInfo.getLimitTime()*60*1000;
         final long overTime=sumTime+System.currentTimeMillis();
@@ -213,7 +223,7 @@ public class ExamActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        commit(null);
+                        commit();
                     }
                 });
             }
@@ -232,10 +242,12 @@ public class ExamActivity extends AppCompatActivity {
             tvOp3.setText(exam.getItem3());
             tvOp4.setText(exam.getItem4());
             tvTime=(TextView)findViewById(R.id.tv_timer);
+            //考试题判断题只显示AB选项，CD不显示
             layout03.setVisibility(exam.getItem3().equals("") ? View.GONE : View.VISIBLE);
             cb03.setVisibility(exam.getItem3().equals("") ? View.GONE : View.VISIBLE);
             layout04.setVisibility(exam.getItem4().equals("") ? View.GONE : View.VISIBLE);
             cb04.setVisibility(exam.getItem4().equals("") ? View.GONE : View.VISIBLE);
+            //判断试题有无图片，有就使用Picasso加载网络图片
             if (exam.getUrl() != null && !exam.getUrl().equals("")) {
                 mImageView.setVisibility(View.VISIBLE);
                 Picasso.with(ExamActivity.this)
@@ -244,13 +256,17 @@ public class ExamActivity extends AppCompatActivity {
             } else {
                 mImageView.setVisibility(View.GONE);
             }
-            resetOptions();
+            resetOptions();//调用初始化选项方法
+            setOptionsColor();  //调用初始化下一题的选项颜色
+            //进行答题时，保存答题的答案，使得点击上一题下一题时显示已选的答案
             String userAnswer =exam.getUserAnswer();
             if(userAnswer!=null&&!userAnswer.equals("")) {
                 int userCB = Integer.parseInt(userAnswer) - 1;
                 cbs[userCB].setChecked(true);
-                setOptions(true);
+                setOptions(true);   //保存答案将答案锁定
                 setAnswerTextColor(userAnswer,exam.getAnswer());
+                //显示正确答案和用户答案和解析
+                tvAnswer.setText("正确答案："+optoin[Integer.parseInt(exam.getAnswer())-1]+"\n"+"你的答案："+optoin[userCB]+"\n"+"解析："+exam.getExplains());
             }else{
                 setOptions(false);
                 setOptionsColor();
@@ -282,23 +298,26 @@ public class ExamActivity extends AppCompatActivity {
         }
     }
 
+    //设置答案不可修改
     private void setOptions(boolean hasAnswer){
         for(CheckBox cb : cbs){
             cb.setEnabled(!hasAnswer);
         }
     }
+    //初始化选项
     private void resetOptions() {
         for(CheckBox cb:cbs){
             cb.setChecked(false);
         }
     }
 
+    //保存用户答案
     private void saveUserAnswer(){
         for(int i=0;i<cbs.length;i++){
             if(cbs[i].isChecked()) {
                 biz.getExam().setUserAnswer(String.valueOf(i+1));
                 setOptions(true);
-                mAdapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();   //刷新
                 return;
             }
         }
@@ -321,15 +340,19 @@ public class ExamActivity extends AppCompatActivity {
         }
     }
 
+    //上一题点击事件
     public void preExam(View view) {
         saveUserAnswer();
         showExam(biz.preQuestion());
     }
 
+    //下一题点击事件
     public void nextExam(View view) {
         saveUserAnswer();
         showExam(biz.nextQuestion());
     }
+
+    //确认交卷后不能继续答题
     public void commit(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setIcon(R.mipmap.exam_commit32x32)
@@ -344,6 +367,8 @@ public class ExamActivity extends AppCompatActivity {
                 .setNegativeButton("取消",null);
         builder.create().show();
     }
+
+    //交卷并显示分数
     public void commit() {
             saveUserAnswer();
             int s = biz.commitExam();
@@ -360,7 +385,7 @@ public class ExamActivity extends AppCompatActivity {
                             finish();
                         }
                     });
-            builder.setCancelable(false);
+            builder.setCancelable(false); //设置除点击对话框的ok外的点击无效
             builder.create().show();
     }
 

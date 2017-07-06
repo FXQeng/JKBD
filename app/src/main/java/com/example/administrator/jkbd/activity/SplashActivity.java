@@ -19,6 +19,8 @@ public class SplashActivity extends AppCompatActivity{
         setContentView(R.layout.activity_splash);
         mCountDownTimer.start();
     }
+
+    //闪屏2秒跳转到主页
     CountDownTimer mCountDownTimer  = new CountDownTimer(2000,1000) {
      @Override
        public void onTick(long millisUntilFinished) {
@@ -27,7 +29,7 @@ public class SplashActivity extends AppCompatActivity{
       public void onFinish() {
           Intent intent = new Intent(SplashActivity.this,MainActivity.class);
           startActivity(intent);
-          finish();
+          finish();  //返回退出
       }
   };
 }

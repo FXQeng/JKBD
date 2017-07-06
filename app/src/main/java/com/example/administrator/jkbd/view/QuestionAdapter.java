@@ -41,11 +41,13 @@ public class QuestionAdapter extends BaseAdapter {
         return 0;
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view=View.inflate(mContext, R.layout.item_question,null);
         TextView tvno=(TextView) view.findViewById(R.id.tv_no);
         ImageView ivQuestion=(ImageView) view.findViewById(R.id.iv_question);
+        //判断用户答案和正确答案，根据结果修改Gallery图标
         String useranswer=examList.get(position).getUserAnswer();
         String ra =examList.get(position).getAnswer();
         if(useranswer!=null&& !useranswer.equals("")){
