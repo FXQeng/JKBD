@@ -330,8 +330,21 @@ public class ExamActivity extends AppCompatActivity {
         saveUserAnswer();
         showExam(biz.nextQuestion());
     }
-
     public void commit(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.exam_commit32x32)
+                .setTitle("交卷")
+                .setMessage("确认交卷吗?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        commit();
+                    }
+                })
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+    public void commit() {
             saveUserAnswer();
             int s = biz.commitExam();
             View inflate = View.inflate(this, R.layout.layout_result, null);
@@ -347,6 +360,7 @@ public class ExamActivity extends AppCompatActivity {
                             finish();
                         }
                     });
+            builder.setCancelable(false);
             builder.create().show();
     }
 
